@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Script para restablecer contraseña de un usuario en Odoo 19 (por defecto admin)
+# Uso: ./scripts/odoo-pw -d <base_de_datos> [-u <usuario>] [-p <nueva_clave>]
+
+database_container=${DB_CONTAINER_NAME:-postgres15_scentsync}
+username="admin"
+new_password=${RESET_PASSWORD:-admin}
+
+while getopts :d:u:p: flag
+do
+    case "${flag}" in
+        d) dbname=${OPTARG};;
+        u) username=${OPTARG};;
+        p) new_password=${OPTARG};;
+        *) echo "Uso: $0 -d <base_de_datos> [-u usuario] [-p clave]"; exit 1;;
+    esac
+done
+
+if [ -z "$dbname" ]; then
+    echo "Uso: $0 -d <base_de_datos> [-u usuario] [-p clave]"
+    exit 1
+fi
+
+echo "🔑 Cambiando clave de usuario '${username}' en la base de datos '${dbname}'..."
+# Generar PBKDF2 hash o actualizar usando comando psql
+docker exec -i ${database_container} psql -U odoo -d "${dbname}" -c "UPDATE res_users SET password='${new_password}' WHERE login='${username}';"
+
+echo "✅ Clave actualizada para '${username}'."

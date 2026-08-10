@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+  <t t-name="scentsync.CheckoutForm">
+    <div class="ss-checkout">
+      <button class="ss-back-btn" t-on-click="props.onBack">← Volver al catálogo</button>
+
+      <div class="ss-checkout__inner">
+        <div class="ss-checkout__form-wrap">
+          <h2 class="ss-checkout__title">Confirmar Pedido</h2>
+          <p class="ss-checkout__sub">Completa tus datos. Tu vendedor se pondrá en contacto para coordinar el pago y envío.</p>
+
+          <form class="ss-form" t-on-submit.prevent="onSubmit">
+            <div class="ss-form__group">
+              <label class="ss-form__label">Nombre completo *</label>
+              <input class="ss-form__input" type="text" t-model="state.name" placeholder="Ej: María García" required="1"/>
+            </div>
+            <div class="ss-form__group">
+              <label class="ss-form__label">WhatsApp *</label>
+              <input class="ss-form__input" type="tel" t-model="state.phone" placeholder="Ej: +58 412 1234567" required="1"/>
+            </div>
+            <div class="ss-form__group">
+              <label class="ss-form__label">Ciudad</label>
+              <input class="ss-form__input" type="text" t-model="state.city" placeholder="Ej: Caracas"/>
+            </div>
+
+            <t t-if="state.error">
+              <p class="ss-form__error" t-esc="state.error"/>
+            </t>
+
+            <button class="ss-btn ss-btn--primary ss-btn--full" type="submit" t-att-disabled="state.loading">
+              <t t-if="state.loading">Procesando...</t>
+              <t t-else="">Enviar Pedido</t>
+            </button>
+          </form>
+        </div>
+
+        <div class="ss-checkout__summary">
+          <h3 class="ss-checkout__summary-title">Resumen</h3>
+          <div class="ss-checkout__items">
+            <t t-foreach="props.cart" t-as="item" t-key="item.id">
+              <div class="ss-checkout__item">
+                <span><t t-esc="item.product_name"/> × <t t-esc="item.quantity"/></span>
+                <span>$<t t-esc="formatPrice(item.subtotal)"/></span>
+              </div>
+            </t>
+          </div>
+          <div class="ss-checkout__total">
+            <strong>Total</strong>
+            <strong>$<t t-esc="formatPrice(props.cartTotal)"/></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

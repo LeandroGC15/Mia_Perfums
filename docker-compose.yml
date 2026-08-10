@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    image: odoo:19.0
+    container_name: odoo19_scentsync
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+      - odoo-web-data:/var/lib/odoo
+    env_file:
+      - .env
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo_password
+      - SCENTSYNC_WHATSAPP_NUMBER=${SCENTSYNC_WHATSAPP_NUMBER}
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: postgres15_scentsync
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo_password
+      - POSTGRES_USER=odoo
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  odoo-web-data:

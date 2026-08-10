@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Script rápido para actualizar módulos en Odoo 19
+# Uso: ./scripts/odoo-update -d <base_de_datos> <modulo1> <modulo2> ...
+
+if [ "$1" = "-d" ]; then
+    dbname="$2"
+    shift 2
+else
+    echo "Uso: $0 -d <base_de_datos> <modulo1> [modulo2 ...]"
+    exit 1
+fi
+
+if [ $# -eq 0 ]; then
+    modules="all"
+else
+    modules=$(IFS=,; echo "$*")
+fi
+
+echo "📦 Actualizando módulo(s) '${modules}' en '${dbname}'..."
+./odoo update -d "${dbname}" -m "${modules}"

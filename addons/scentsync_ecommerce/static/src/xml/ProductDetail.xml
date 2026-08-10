@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+  <!-- Tarjeta de producto para la grilla -->
+  <t t-name="scentsync.ProductCard">
+    <div class="ss-card" t-on-click="() => props.onViewDetail(props.product)">
+      <div class="ss-card__img-wrap">
+        <img
+          class="ss-card__img"
+          t-att-src="props.product.image_url"
+          t-att-alt="props.product.name"
+          loading="lazy"
+        />
+        <span t-if="props.product.featured" class="ss-card__badge">⭐ Destacado</span>
+        <span t-if="props.product.olfactory_family" class="ss-card__family" t-esc="getFamilyLabel(props.product.olfactory_family)"/>
+      </div>
+      <div class="ss-card__body">
+        <h3 class="ss-card__name" t-esc="props.product.name"/>
+        <p t-if="props.product.size_ml" class="ss-card__meta">
+          <t t-esc="props.product.size_ml"/> ML
+          <t t-if="props.product.concentration"> · <t t-esc="props.product.concentration"/></t>
+        </p>
+        <div class="ss-card__footer">
+          <span class="ss-card__price">$<t t-esc="formatPrice(props.product.price)"/></span>
+          <button
+            class="ss-btn ss-btn--icon-cart"
+            t-on-click.stop="onAddToCart"
+            t-att-class="{ 'ss-btn--added': state.added }"
+            title="Agregar al carrito"
+          >
+            <svg t-if="state.added" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <svg t-else="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              <line x1="11" y1="11" x2="15" y2="11"></line>
+              <line x1="13" y1="9" x2="13" y2="13"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- Vista de detalle de un producto -->
+  <t t-name="scentsync.ProductDetail">
+    <div class="ss-detail">
+      <button class="ss-back-btn" t-on-click="props.onBack">
+        ← Volver al catálogo
+      </button>
+      <div class="ss-detail__inner">
+        <div class="ss-detail__gallery">
+          <img class="ss-detail__img" t-att-src="props.product.image_url" t-att-alt="props.product.name"/>
+        </div>
+        <div class="ss-detail__info">
+          <span t-if="props.product.olfactory_family" class="ss-tag" t-esc="getFamilyLabel(props.product.olfactory_family)"/>
+          <h1 class="ss-detail__name" t-esc="props.product.name"/>
+          <p class="ss-detail__price">$<t t-esc="formatPrice(props.product.price)"/></p>
+
+          <div t-if="props.product.size_ml or props.product.concentration or props.product.gender" class="ss-detail__meta">
+            <span t-if="props.product.size_ml"><strong>Tamaño:</strong> <t t-esc="props.product.size_ml"/> ML</span>
+            <span t-if="props.product.concentration"><strong>Concentración:</strong> <t t-esc="props.product.concentration"/></span>
+            <span t-if="props.product.gender"><strong>Género:</strong> <t t-esc="props.product.gender"/></span>
+          </div>
+
+          <div t-if="props.product.description" class="ss-detail__desc">
+            <h4>Descripción</h4>
+            <p t-esc="props.product.description"/>
+          </div>
+
+          <div t-if="props.product.notes" class="ss-detail__notes">
+            <h4>🌸 Notas Olfativas</h4>
+            <p t-esc="props.product.notes"/>
+          </div>
+
+          <div class="ss-detail__actions">
+            <div class="ss-qty-control">
+              <button t-on-click="decQty">−</button>
+              <span t-esc="state.qty"/>
+              <button t-on-click="incQty">+</button>
+            </div>
+            <button class="ss-btn ss-btn--primary ss-btn--lg" t-on-click="onAddToCart">
+              Agregar al carrito
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

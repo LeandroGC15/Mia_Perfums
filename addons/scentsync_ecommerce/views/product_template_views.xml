@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Campo Familia visible en el bloque principal del producto -->
+    <record id="scentsync_product_template_form_view_inline" model="ir.ui.view">
+        <field name="name">product.template.form.scentsync.inline</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Campo Familia junto al nombre del producto -->
+            <field name="name" position="after">
+                <field name="scentsync_family_ids"
+                       widget="many2many_tags"
+                       string="Familias"
+                       options="{'no_create': false, 'no_open': false}"
+                       placeholder="Selecciona una o más familias..."/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Campos de Precios (Precio Anterior, % Descuento, Precio BCV, Ganancia) -->
+    <record id="scentsync_product_template_form_view_pricing" model="ir.ui.view">
+        <field name="name">product.template.form.scentsync.pricing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='supplier_taxes_id']" position="after">
+                <field name="scentsync_compare_at_price" string="Precio Anterior"/>
+                <field name="scentsync_discount_percentage" string="% de Descuento"/>
+                <field name="scentsync_price_bcv" string="Precio BCV"/>
+                <field name="scentsync_profit" string="Ganancia" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tab "ScentSync" con el resto de los campos de la tienda -->
+    <record id="scentsync_product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.scentsync</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Tienda Web" name="scentsync_page">
+                    <group string="Clasificación">
+                        <group>
+                            <field name="scentsync_family_ids" widget="many2many_tags" string="Familias de Perfumes"/>
+                            <field name="scentsync_concentration"/>
+                            <field name="scentsync_gender"/>
+                        </group>
+                        <group>
+                            <field name="scentsync_size_ml"/>
+                            <field name="scentsync_featured" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Promociones Web">
+                        <group>
+                            <field name="scentsync_compare_at_price"/>
+                            <field name="scentsync_discount_percentage"/>
+                        </group>
+                    </group>
+                    <group string="Notas Olfativas">
+                        <field name="scentsync_description_notes"
+                               nolabel="1"
+                               placeholder="Ej: Rosa, Jazmín, Sándalo, Ámbar, Vainilla (separados por coma)"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+</odoo>

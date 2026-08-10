@@ -1,0 +1,153 @@
+#!/usr/bin/env python3
+"""
+CLI de Gestión de Docker para ScentSync (Odoo 19)
+Facilita la administración de contenedores, actualización de módulos y tareas de BD.
+"""
+
+import argparse
+import os
+import sys
+import subprocess
+from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+PROJECT_NAME = os.getenv("PROJECT_NAME", "odoo19_scentsync")
+DB_CONTAINER_NAME = os.getenv("DB_CONTAINER_NAME", "postgres15_scentsync")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "odoo")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "odoo_password")
+EXTERNAL_PORT_ODOO = os.getenv("EXTERNAL_PORT_ODOO", "8069")
+
+
+def start_odoo():
+    print("\n🚀 Iniciando servicios de ScentSync (Odoo 19)...\n")
+    cmd = "docker compose up -d"
+    print(f"Ejecutando: {cmd}")
+    os.system(cmd)
+    print(f"\n✅ ScentSync activo en: http://localhost:{EXTERNAL_PORT_ODOO}\n")
+
+
+def stop_odoo():
+    print("\n🛑 Deteniendo servicios de ScentSync...\n")
+    cmd = "docker compose down"
+    print(f"Ejecutando: {cmd}")
+    os.system(cmd)
+    print("\n✅ Servicios detenidos correctamente.\n")
+
+
+def restart_odoo():
+    print("\n🔄 Reiniciando servicios de ScentSync...\n")
+    stop_odoo()
+    start_odoo()
+
+
+def build_odoo(no_cache=False):
+    print("\n🏗️  Construyendo imágenes de Docker para ScentSync...\n")
+    cmd = "docker compose build --no-cache" if no_cache else "docker compose build"
+    print(f"Ejecutando: {cmd}")
+    os.system(cmd)
+
+
+def run_bash():
+    print(f"\n💻 Entrando a la consola Bash del contenedor '{PROJECT_NAME}'...\n")
+    os.system(f"docker exec -u root -it {PROJECT_NAME} bash")
+
+
+def update_modules(dbname: str, modules: str = "all"):
+    print(f"\n📦 Actualizando módulo(s) [{modules}] en la base de datos '{dbname}'...\n")
+    cmd = (
+        f"docker exec -u root -it {PROJECT_NAME} "
+        f"odoo --stop-after-init -p 8069 --workers=0 -u {modules} -d {dbname}"
+    )
+    print(f"Ejecutando: {cmd}\n")
+    os.system(cmd)
+
+
+def psql(dbname: str):
+    print(f"\n🗄️  Conectando a PostgreSQL (BD: '{dbname}')...\n")
+    cmd = (
+        f"docker exec -it -e PGPASSWORD={POSTGRES_PASSWORD} {DB_CONTAINER_NAME} "
+        f"psql -U {POSTGRES_USER} -d {dbname}"
+    )
+    os.system(cmd)
+
+
+def show_logs():
+    print("\n📋 Mostrando logs en tiempo real (Ctrl+C para salir)...\n")
+    os.system("docker compose logs --tail=50 -f")
+
+
+def list_containers():
+    print("\n📊 Estado de los contenedores:\n")
+    os.system("docker compose ps")
+
+
+def remove_odoo():
+    print("\n⚠️  ¡ATENCIÓN! Esto eliminará los contenedores y volúmenes de datos.")
+    respuesta = input("¿Estás seguro de que deseas continuar? (s/N): ").strip().lower()
+    if respuesta == 's':
+        print("\n🗑️  Eliminando contenedores y volúmenes...")
+        os.system("docker compose down -v --remove-orphans")
+        print("\n✅ Eliminación completada.\n")
+    else:
+        print("\nOperación cancelada.\n")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Herramienta CLI para la gestión del entorno Docker de ScentSync."
+    )
+    subparsers = parser.add_subparsers(dest="action", help="Comandos disponibles")
+
+    subparsers.add_parser("start", help="Iniciar contenedores (Odoo 19 + DB)")
+    subparsers.add_parser("stop", help="Detener contenedores")
+    subparsers.add_parser("restart", help="Reiniciar contenedores")
+    subparsers.add_parser("bash", help="Abrir terminal bash interactiva dentro del contenedor de Odoo")
+    subparsers.add_parser("logs", help="Ver logs en tiempo real")
+    subparsers.add_parser("list", help="Listar estado de contenedores")
+    subparsers.add_parser("remove", help="Eliminar contenedores y volúmenes de datos")
+
+    build_parser = subparsers.add_parser("build", help="Reconstruir la imagen de Docker")
+    build_parser.add_argument("--no-cache", action="store_true", help="Construir sin usar caché")
+
+    update_parser = subparsers.add_parser("update", help="Actualizar módulos en la base de datos")
+    update_parser.add_argument("-d", required=True, help="Nombre de la base de datos")
+    update_parser.add_argument(
+        "-m", default="all", help="Módulos a actualizar separados por comas (por defecto: all)"
+    )
+
+    psql_parser = subparsers.add_parser("psql", help="Acceder a PostgreSQL vía psql")
+    psql_parser.add_argument("-d", required=True, help="Nombre de la base de datos")
+
+    args = parser.parse_args()
+
+    if args.action == "start":
+        start_odoo()
+    elif args.action == "stop":
+        stop_odoo()
+    elif args.action == "restart":
+        restart_odoo()
+    elif args.action == "build":
+        build_odoo(args.no_cache)
+    elif args.action == "bash":
+        run_bash()
+    elif args.action == "update":
+        update_modules(args.d, args.m)
+    elif args.action == "psql":
+        psql(args.d)
+    elif args.action == "logs":
+        show_logs()
+    elif args.action == "list":
+        list_containers()
+    elif args.action == "remove":
+        remove_odoo()
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+
+  <t t-name="scentsync.ProductGrid">
+    <div class="ss-catalog">
+      <!-- Barra de búsqueda y filtros -->
+      <div class="ss-catalog__filters">
+        <div class="ss-search">
+          <svg class="ss-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            class="ss-search__input"
+            type="text"
+            placeholder="Buscar perfumes..."
+            t-att-value="props.searchQuery"
+            t-on-input="onSearchInput"
+          />
+        </div>
+        <div class="ss-family-filters">
+          <button
+            class="ss-pill"
+            t-att-class="{ 'ss-pill--active': !props.activeFamily }"
+            t-on-click="() => props.onFamilyChange('')"
+          >Todos</button>
+          <t t-foreach="props.families" t-as="fam" t-key="fam.value">
+            <button
+              class="ss-pill"
+              t-att-class="{ 'ss-pill--active': props.activeFamily === fam.value }"
+              t-on-click="() => props.onFamilyChange(fam.value)"
+              t-esc="fam.label"
+            />
+          </t>
+        </div>
+      </div>
+
+      <!-- Estado: Cargando -->
+      <div t-if="props.loading" class="ss-state-msg">
+        <div class="ss-spinner"/>
+        <p>Cargando colección...</p>
+      </div>
+
+      <!-- Estado: Sin resultados -->
+      <div t-elif="!props.products.length" class="ss-state-msg">
+        <p class="ss-state-msg__icon">🔍</p>
+        <p>No encontramos perfumes con ese criterio.</p>
+      </div>
+
+      <!-- Grilla de productos -->
+      <div t-else="" class="ss-grid">
+        <t t-foreach="props.products" t-as="product" t-key="product.id">
+          <ProductCard
+            product="product"
+            onViewDetail="props.onViewDetail"
+            onAddToCart="props.onAddToCart"
+          />
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

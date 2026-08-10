@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_scentsync" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.scentsync</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="90"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="ScentSync Store" string="ScentSync" name="scentsync_ecommerce">
+                    <block title="Configuración de Tienda ScentSync" name="scentsync_config_block">
+                        <setting string="Contacto de la Tienda" help="Datos de contacto mostrados en el lateral de la tienda web">
+                            <field name="scentsync_whatsapp_number" placeholder="Ej: +584244778061"/>
+                            <field name="scentsync_instagram_handle" placeholder="Ej: @scentsync_oficial"/>
+                            <field name="scentsync_location" placeholder="Ej: Maracaibo, Edo Zulia."/>
+                        </setting>
+                        <setting string="Información de Envíos y Entrega" help="Texto informativo sobre retiros, zonas de envío y delivery">
+                            <field name="scentsync_delivery_info" widget="text" placeholder="📍 Tienda virtual en Maracaibo..."/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="scentsync_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Ajustes de ScentSync</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module' : 'scentsync_ecommerce'}</field>
+    </record>
+
+    <menuitem id="scentsync_menu_config_settings"
+              name="Ajustes de Tienda ScentSync"
+              parent="stock.menu_stock_config_settings"
+              action="scentsync_config_settings_action"
+              sequence="100"/>
+
+</odoo>

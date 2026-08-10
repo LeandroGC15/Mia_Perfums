@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Asset bundle de la tienda pública, separado del backend de Odoo -->
+    <template id="shop_assets" name="ScentSync Shop Assets">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap"/>
+        <t t-call-assets="scentsync_ecommerce.shop_assets" t-js="false"/>
+        <t t-call-assets="scentsync_ecommerce.shop_assets" t-css="false"/>
+    </template>
+
+    <!-- Página principal de la tienda (SPA limpia sin interfaz de Odoo) -->
+    <template id="shop_page" name="ScentSync Shop">
+        &lt;!DOCTYPE html&gt;
+        <html lang="es">
+            <head>
+                <meta charset="UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <meta name="description" content="ScentSync — Perfumes de lujo. Descubre nuestra colección de fragancias únicas."/>
+                <title>ScentSync — Perfumes de Lujo</title>
+                <link rel="icon" type="image/png" href="/scentsync_ecommerce/static/src/img/favicon.png"/>
+                <t t-call="scentsync_ecommerce.shop_assets"/>
+            </head>
+            <body>
+                <!-- Punto de montaje de la app OWL -->
+                <div id="scentsync-shop-root"></div>
+            </body>
+        </html>
+    </template>
+</odoo>

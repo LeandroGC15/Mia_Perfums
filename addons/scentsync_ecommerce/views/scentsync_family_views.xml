@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── VISTAS SCENTSYNC.FAMILY ──────────────────────────── -->
+
+    <record id="scentsync_family_view_list" model="ir.ui.view">
+        <field name="name">scentsync.family.list</field>
+        <field name="model">scentsync.family</field>
+        <field name="arch" type="xml">
+            <list string="Familias de Perfumes" editable="top">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="product_count" string="Productos" optional="show"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="scentsync_family_view_form" model="ir.ui.view">
+        <field name="name">scentsync.family.form</field>
+        <field name="model">scentsync.family</field>
+        <field name="arch" type="xml">
+            <form string="Familia de Perfumes">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado"
+                            bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ej: Floral, Oriental, Amaderado..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="product_count" string="Total de productos"/>
+                        </group>
+                    </group>
+                    <group string="Descripción">
+                        <field name="description" nolabel="1"
+                               placeholder="Describe brevemente esta familia olfativa..."/>
+                    </group>
+                    <notebook>
+                        <page string="Productos" name="products">
+                            <field name="product_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="list_price" string="Precio"/>
+                                    <field name="scentsync_featured" string="Destacado"/>
+                                    <field name="active" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── ACCIÓN ──────────────────────────────────────────── -->
+
+    <record id="scentsync_family_action" model="ir.actions.act_window">
+        <field name="name">Familias de Perfumes</field>
+        <field name="res_model">scentsync.family</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea la primera familia de perfumes
+            </p>
+            <p>
+                Las familias agrupan tus productos en la tienda web.
+                Los clientes podrán filtrar por familia al explorar el catálogo.
+            </p>
+        </field>
+    </record>
+
+    <!-- ── ACCESOS AL MODELO ───────────────────────────────── -->
+    <!-- Se define aquí (no en CSV) para evitar el error de ID externo durante upgrade -->
+
+    <record id="access_scentsync_family_public" model="ir.model.access">
+        <field name="name">scentsync.family.public</field>
+        <field name="model_id" ref="model_scentsync_family"/>
+        <field name="group_id" ref="base.group_public"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="access_scentsync_family_user" model="ir.model.access">
+        <field name="name">scentsync.family.user</field>
+        <field name="model_id" ref="model_scentsync_family"/>
+        <field name="group_id" ref="base.group_user"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- ── MENÚ: Inventario → Productos → Familias de Perfumes ── -->
+
+    <menuitem id="scentsync_menu_families"
+              name="Familias de Perfumes"
+              parent="stock.menu_stock_inventory_control"
+              action="scentsync_family_action"
+              sequence="15"/>
+
+</odoo>
