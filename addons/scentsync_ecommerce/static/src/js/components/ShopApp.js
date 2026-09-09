@@ -16,8 +16,8 @@
             <header class="ss-header">
                 <div class="ss-header__inner">
                     <a href="/shop" class="ss-logo">
-                        <span class="ss-logo__icon">✦</span>
-                        <span class="ss-logo__name">ScentSync</span>
+                        <img src="/scentsync_ecommerce/static/src/img/logo.png" alt="Mía Parfums" class="ss-logo__img"/>
+                        <span class="ss-logo__name">Mía Parfums</span>
                     </a>
                     <div style="flex:1"/>
                     <button class="ss-cart-btn"
@@ -69,8 +69,10 @@
                             searchQuery="state.searchQuery"
                             onFamilyChange.bind="onFamilyChange"
                             onSearch.bind="onSearch"
+                            cart="state.cart"
                             onViewDetail.bind="openModal"
-                            onAddToCart.bind="addToCart"/>
+                            onAddToCart.bind="addToCart"
+                            onSetQuantity.bind="setProductQuantity"/>
                     </section>
                 </div>
 
@@ -107,101 +109,7 @@
                     </section>
                 </t>
 
-                <!-- 5. GUÍA OLFATIVA -->
-                <section class="ss-guide">
-                    <div class="ss-guide__inner">
-                        <div class="ss-guide__header ss-reveal">
-                            <span class="ss-section-label">Aprende</span>
-                            <h2 class="ss-section-title">La pirámide olfativa</h2>
-                            <p class="ss-guide__sub">
-                                Toda fragancia se compone de tres capas que evolucionan
-                                sobre tu piel a lo largo del día.
-                            </p>
-                        </div>
-                        <div class="ss-pyramid">
-                            <div class="ss-pyramid__tier ss-pyramid__tier--top ss-reveal ss-reveal--delay-1">
-                                <div class="ss-pyramid__tier-icon">🍋</div>
-                                <div>
-                                    <span class="ss-pyramid__tier-badge">Notas de salida</span>
-                                    <h3 class="ss-pyramid__tier-name">Primera impresión</h3>
-                                    <p class="ss-pyramid__tier-desc">
-                                        Lo primero que percibes al aplicar el perfume. Frescas y ligeras,
-                                        duran entre 15 y 30 minutos.
-                                    </p>
-                                    <div class="ss-pyramid__examples">
-                                        <span class="ss-pyramid__example">Bergamota</span>
-                                        <span class="ss-pyramid__example">Limón</span>
-                                        <span class="ss-pyramid__example">Pomelo</span>
-                                        <span class="ss-pyramid__example">Menta</span>
-                                        <span class="ss-pyramid__example">Aldehídos</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ss-pyramid__tier ss-pyramid__tier--heart ss-reveal ss-reveal--delay-2">
-                                <div class="ss-pyramid__tier-icon">🌹</div>
-                                <div>
-                                    <span class="ss-pyramid__tier-badge">Notas de corazón</span>
-                                    <h3 class="ss-pyramid__tier-name">El carácter</h3>
-                                    <p class="ss-pyramid__tier-desc">
-                                        El alma del perfume. Aparecen tras los primeros minutos
-                                        y duran entre 2 y 4 horas.
-                                    </p>
-                                    <div class="ss-pyramid__examples">
-                                        <span class="ss-pyramid__example">Rosa</span>
-                                        <span class="ss-pyramid__example">Jazmín</span>
-                                        <span class="ss-pyramid__example">Geranio</span>
-                                        <span class="ss-pyramid__example">Especias</span>
-                                        <span class="ss-pyramid__example">Iris</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ss-pyramid__tier ss-pyramid__tier--base ss-reveal ss-reveal--delay-3">
-                                <div class="ss-pyramid__tier-icon">🪵</div>
-                                <div>
-                                    <span class="ss-pyramid__tier-badge">Notas de fondo</span>
-                                    <h3 class="ss-pyramid__tier-name">La huella que dejas</h3>
-                                    <p class="ss-pyramid__tier-desc">
-                                        La firma del perfume. Ricas y profundas, permanecen
-                                        sobre la piel durante 4 a 8 horas o más.
-                                    </p>
-                                    <div class="ss-pyramid__examples">
-                                        <span class="ss-pyramid__example">Sándalo</span>
-                                        <span class="ss-pyramid__example">Ámbar</span>
-                                        <span class="ss-pyramid__example">Almizcle</span>
-                                        <span class="ss-pyramid__example">Vainilla</span>
-                                        <span class="ss-pyramid__example">Vetiver</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- 6. SECCIÓN DE REGALO -->
-                <section class="ss-gift">
-                    <div class="ss-gift__inner ss-reveal">
-                        <span class="ss-gift__icon">🎁</span>
-                        <span class="ss-section-label">Regala experiencias</span>
-                        <h2 class="ss-gift__title">El regalo perfecto siempre huele bien</h2>
-                        <p class="ss-gift__text">
-                            Un perfume es mucho más que un regalo, es una experiencia sensorial
-                            que la persona llevará consigo. Encuentra la fragancia ideal para
-                            cada ocasión especial.
-                        </p>
-                        <div class="ss-gift__occasions">
-                            <div class="ss-gift__occasion">💍 Aniversarios</div>
-                            <div class="ss-gift__occasion">🎂 Cumpleaños</div>
-                            <div class="ss-gift__occasion">💼 Corporativos</div>
-                            <div class="ss-gift__occasion">🌹 San Valentín</div>
-                            <div class="ss-gift__occasion">🎓 Graduaciones</div>
-                            <div class="ss-gift__occasion">🌸 Día de las Madres</div>
-                        </div>
-                        <button class="ss-hero__btn ss-hero__btn--gold"
-                                t-on-click="scrollToCatalog">
-                            Ver colección completa
-                        </button>
-                    </div>
-                </section>
 
                 <!-- 7. FOOTER -->
                 <footer class="ss-footer">
@@ -209,8 +117,8 @@
                         <div class="ss-footer__top">
                             <div class="ss-footer__brand-wrap">
                                 <a href="/shop" class="ss-footer__brand ss-logo">
-                                    <span class="ss-logo__icon">✦</span>
-                                    <span class="ss-logo__name">ScentSync</span>
+                                    <img src="/scentsync_ecommerce/static/src/img/logo.png" alt="Mía Parfums" class="ss-logo__img"/>
+                                    <span class="ss-logo__name">Mía Parfums</span>
                                 </a>
                                 <p class="ss-footer__tagline">
                                     Fragancias de lujo con entrega directa y atención personalizada.
@@ -235,9 +143,9 @@
                         </div>
                         <div class="ss-footer__bottom">
                             <span class="ss-footer__copy">
-                                © 2025 ScentSync · Todos los derechos reservados
+                                © 2025 Mía Parfums · Todos los derechos reservados
                             </span>
-                            <span class="ss-footer__gold">✦ ScentSync</span>
+                            <span class="ss-footer__gold">✦ Mía Parfums</span>
                         </div>
                     </div>
                 </footer>
@@ -380,9 +288,25 @@
 
         openModal(product) { this.state.modalProduct = product; }
 
-        async addToCart(productId, qty) {
+        async addToCart(productId, qty, openCart = true) {
             const res = await rpc('/scentsync/api/cart/add', { product_id: productId, quantity: qty });
-            if (res) { this.state.cart = res.items || []; this.state.cartOpen = true; }
+            if (res) { 
+                this.state.cart = res.items || []; 
+                if (openCart) this.state.cartOpen = true; 
+            }
+        }
+
+        async setProductQuantity(productId, newQty) {
+            const item = this.state.cart.find(i => i.product_id === productId);
+            if (newQty <= 0) {
+                if (item) await this.removeFromCart(item.id);
+            } else {
+                if (item) {
+                    await this.updateCart(item.id, newQty);
+                } else {
+                    await this.addToCart(productId, newQty, false);
+                }
+            }
         }
 
         async updateCart(itemId, qty) {

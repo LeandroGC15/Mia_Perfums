@@ -19,7 +19,6 @@ services:
       - HOST=db
       - USER=odoo
       - PASSWORD=odoo_password
-      - SCENTSYNC_WHATSAPP_NUMBER=${SCENTSYNC_WHATSAPP_NUMBER}
     restart: unless-stopped
 
   db:

@@ -155,8 +155,8 @@ class ScentSyncAPI(http.Controller):
     @http.route('/scentsync/api/cart/add', auth='public', type='json', csrf=False, methods=['POST'])
     def add_to_cart(self, product_id, quantity=1, **kwargs):
         session_id = self._get_session_id()
-        product = request.env['product.product'].sudo().browse(int(product_id))
-        if not product.exists():
+        product = request.env['product.product'].sudo().search([('product_tmpl_id', '=', int(product_id))], limit=1)
+        if not product:
             return {'error': 'Producto no encontrado'}
 
         existing = request.env['scentsync.cart'].sudo().search([

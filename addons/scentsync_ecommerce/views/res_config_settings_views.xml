@@ -13,10 +13,10 @@
                         <setting string="Contacto de la Tienda" help="Datos de contacto mostrados en el lateral de la tienda web">
                             <field name="scentsync_whatsapp_number" placeholder="Ej: +584244778061"/>
                             <field name="scentsync_instagram_handle" placeholder="Ej: @scentsync_oficial"/>
-                            <field name="scentsync_location" placeholder="Ej: Maracaibo, Edo Zulia."/>
+                            <field name="scentsync_location" placeholder="Ej: San Juan de los Morros, Edo Guárico."/>
                         </setting>
                         <setting string="Información de Envíos y Entrega" help="Texto informativo sobre retiros, zonas de envío y delivery">
-                            <field name="scentsync_delivery_info" widget="text" placeholder="📍 Tienda virtual en Maracaibo..."/>
+                            <field name="scentsync_delivery_info" widget="text" placeholder="📍 Tienda virtual en San Juan de los Morros, Edo Guárico."/>
                         </setting>
                     </block>
                 </app>

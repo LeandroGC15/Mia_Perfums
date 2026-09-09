@@ -27,6 +27,9 @@
 
                         <!-- Columna izquierda: imagen -->
                         <div class="ss-modal__gallery">
+                            <span t-if="props.product.discount_percentage &gt; 0" class="ss-card__discount-badge">
+                                -<t t-esc="props.product.discount_percentage"/>%
+                            </span>
                             <img class="ss-modal__img"
                                  t-att-src="props.product.image_url"
                                  t-att-alt="props.product.name"/>
@@ -59,6 +62,9 @@
 
                             <!-- Precio -->
                             <div class="ss-modal__price-row">
+                                <span t-if="props.product.compare_at_price &gt; 0" class="ss-modal__old-price">
+                                    $<t t-esc="fmt(props.product.compare_at_price)"/>
+                                </span>
                                 <span class="ss-modal__price">$<t t-esc="fmt(props.product.price)"/></span>
                             </div>
 
@@ -84,17 +90,21 @@
                             <!-- Acciones: cantidad + botón agregar -->
                             <div class="ss-modal__actions">
                                 <div class="ss-modal__add-row">
-                                    <div class="ss-qty-control">
-                                        <button t-on-click="dec">−</button>
-                                        <span t-esc="state.qty"/>
-                                        <button t-on-click="inc">+</button>
+                                    <div class="ss-card__qty-control">
+                                        <button class="ss-qty-btn" t-on-click="dec">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        </button>
+                                        <span class="ss-qty-val" t-esc="state.qty"/>
+                                        <button class="ss-qty-btn" t-on-click="inc">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        </button>
                                     </div>
-                                    <button class="ss-btn ss-btn--primary"
+                                    <button class="ss-btn ss-modal__btn-cart"
                                             t-att-class="{ 'ss-btn--added': state.added }"
                                             t-att-disabled="state.adding"
                                             t-on-click="addToCart">
-                                        <t t-if="state.added">✓ ¡Agregado! Abriendo carrito...</t>
-                                        <t t-else="">🛒 Agregar al carrito</t>
+                                        <t t-if="state.added">✓ ¡Agregado!</t>
+                                        <t t-else="">Agregar al carrito</t>
                                     </button>
                                 </div>
                             </div>

@@ -7,7 +7,7 @@
     const { fmt, NOTE_COLORS } = SS;
 
     class ProductCard extends Component {
-        static props = ['product', 'onViewDetail', 'onAddToCart', 'focusMode?', 'listMode?'];
+        static props = ['product', 'onViewDetail', 'onAddToCart', 'focusMode?', 'listMode?', 'cart?', 'onSetQuantity?'];
         static template = xml/* html */`
             <div t-att-class="cardClass" t-on-click="() => props.onViewDetail(props.product)">
                 <div class="ss-card__img-wrap">
@@ -74,32 +74,38 @@
                                 $<t t-esc="fmt(props.product.price)"/>
                             </span>
                         </div>
-                        <button class="ss-btn ss-btn--icon-cart"
-                                t-att-class="{ 'ss-btn--added': state.added }"
-                                t-on-click.stop="addToCart"
+                        <div t-if="cartQty &gt; 0" class="ss-card__qty-control" t-on-click.stop="">
+                            <button class="ss-qty-btn" t-on-click.stop="decreaseQty">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                            <span class="ss-qty-val" t-esc="cartQty"/>
+                            <button class="ss-qty-btn" t-on-click.stop="increaseQty">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                        </div>
+                        <button t-else="" class="ss-btn ss-btn--icon-cart"
+                                t-on-click.stop="increaseQty"
                                 title="Agregar al carrito">
-                            <!-- Icono Plus o Checkmark -->
-                            <span t-if="!state.added" class="ss-btn__plus-icon">+</span>
-                            <svg t-else="" width="18" height="18" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="3"
-                                 stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
+                            <span class="ss-btn__plus-icon">+</span>
                         </button>
                     </div>
 
-                    <button t-if="props.listMode"
-                            class="ss-btn ss-btn--icon-cart"
-                            t-att-class="{ 'ss-btn--added': state.added }"
-                            t-on-click.stop="addToCart"
-                            title="Agregar al carrito">
-                        <span t-if="!state.added" class="ss-btn__plus-icon">+</span>
-                        <svg t-else="" width="18" height="18" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="3"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                    </button>
+                    <t t-if="props.listMode">
+                        <div t-if="cartQty &gt; 0" class="ss-card__qty-control ss-card__qty-control--list" t-on-click.stop="">
+                            <button class="ss-qty-btn" t-on-click.stop="decreaseQty">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                            <span class="ss-qty-val" t-esc="cartQty"/>
+                            <button class="ss-qty-btn" t-on-click.stop="increaseQty">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                        </div>
+                        <button t-else="" class="ss-btn ss-btn--icon-cart"
+                                t-on-click.stop="increaseQty"
+                                title="Agregar al carrito">
+                            <span class="ss-btn__plus-icon">+</span>
+                        </button>
+                    </t>
                 </div>
             </div>`;
 
@@ -114,6 +120,26 @@
         }
 
         fmt(p) { return fmt(p); }
+
+        get cartQty() {
+            if (!this.props.cart) return 0;
+            const item = this.props.cart.find(i => i.product_id === this.props.product.id);
+            return item ? item.quantity : 0;
+        }
+
+        async increaseQty() {
+            if (this.props.onSetQuantity) {
+                await this.props.onSetQuantity(this.props.product.id, this.cartQty + 1);
+            } else {
+                await this.addToCart();
+            }
+        }
+
+        async decreaseQty() {
+            if (this.props.onSetQuantity) {
+                await this.props.onSetQuantity(this.props.product.id, this.cartQty - 1);
+            }
+        }
 
         get notePills() {
             const raw = this.props.product.notes || '';

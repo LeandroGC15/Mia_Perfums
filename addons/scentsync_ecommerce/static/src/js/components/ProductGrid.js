@@ -10,7 +10,7 @@
         static components = { ProductCard };
         static props = [
             'products', 'loading', 'families', 'activeFamily', 'searchQuery',
-            'onFamilyChange', 'onSearch', 'onViewDetail', 'onAddToCart',
+            'cart', 'onFamilyChange', 'onSearch', 'onViewDetail', 'onAddToCart', 'onSetQuantity',
         ];
         static template = xml/* html */`
             <div class="ss-catalog-layout">
@@ -164,11 +164,13 @@
                                     </button>
 
                                     <div t-att-id="'fam-track-' + fam.id" class="ss-carousel-track">
-                                        <t t-foreach="getFamilyProducts(fam.id)" t-as="product" t-key="product.id">
+                                        <t t-foreach="getFamilyProducts(fam.id).slice(0, 4)" t-as="product" t-key="product.id">
                                             <div class="ss-carousel-slide">
                                                 <ProductCard product="product"
+                                                             cart="props.cart"
                                                              onViewDetail="props.onViewDetail"
-                                                             onAddToCart="props.onAddToCart"/>
+                                                             onAddToCart="props.onAddToCart"
+                                                             onSetQuantity="props.onSetQuantity"/>
                                             </div>
                                         </t>
 
@@ -197,12 +199,19 @@
 
                                 <!-- Vista Lista (Filas Horizontales Apiladas) -->
                                 <div t-else="" class="ss-grid--list">
-                                    <t t-foreach="getFamilyProducts(fam.id)" t-as="product" t-key="product.id">
+                                    <t t-foreach="getFamilyProducts(fam.id).slice(0, 4)" t-as="product" t-key="product.id">
                                         <ProductCard product="product"
+                                                     cart="props.cart"
                                                      listMode="true"
                                                      onViewDetail="props.onViewDetail"
-                                                     onAddToCart="props.onAddToCart"/>
+                                                     onAddToCart="props.onAddToCart"
+                                                     onSetQuantity="props.onSetQuantity"/>
                                     </t>
+                                    <div style="text-align: center; padding: 1rem 0;">
+                                        <button class="ss-btn ss-btn--outline" t-on-click="() => props.onFamilyChange(fam.id)">
+                                            Ver todo de <t t-esc="fam.name"/>
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>
@@ -216,16 +225,20 @@
                             <div t-if="viewMode === 'grid'" class="ss-grid">
                                 <t t-foreach="props.products" t-as="product" t-key="product.id">
                                     <ProductCard product="product"
+                                                 cart="props.cart"
                                                  onViewDetail="props.onViewDetail"
-                                                 onAddToCart="props.onAddToCart"/>
+                                                 onAddToCart="props.onAddToCart"
+                                                 onSetQuantity="props.onSetQuantity"/>
                                 </t>
                             </div>
                             <div t-else="" class="ss-grid--list">
                                 <t t-foreach="props.products" t-as="product" t-key="product.id">
                                     <ProductCard product="product"
+                                                 cart="props.cart"
                                                  listMode="true"
                                                  onViewDetail="props.onViewDetail"
-                                                 onAddToCart="props.onAddToCart"/>
+                                                 onAddToCart="props.onAddToCart"
+                                                 onSetQuantity="props.onSetQuantity"/>
                                 </t>
                             </div>
                         </div>
@@ -246,16 +259,20 @@
                         <div t-if="viewMode === 'grid'" class="ss-grid">
                             <t t-foreach="props.products" t-as="product" t-key="product.id">
                                 <ProductCard product="product"
+                                             cart="props.cart"
                                              onViewDetail="props.onViewDetail"
-                                             onAddToCart="props.onAddToCart"/>
+                                             onAddToCart="props.onAddToCart"
+                                             onSetQuantity="props.onSetQuantity"/>
                             </t>
                         </div>
                         <div t-else="" class="ss-grid--list">
                             <t t-foreach="props.products" t-as="product" t-key="product.id">
                                 <ProductCard product="product"
+                                             cart="props.cart"
                                              listMode="true"
                                              onViewDetail="props.onViewDetail"
-                                             onAddToCart="props.onAddToCart"/>
+                                             onAddToCart="props.onAddToCart"
+                                             onSetQuantity="props.onSetQuantity"/>
                             </t>
                         </div>
                     </t>
