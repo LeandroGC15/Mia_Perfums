@@ -36,7 +36,8 @@
                                     <div class="ss-qty-control ss-qty-control--sm">
                                         <button t-on-click="() => props.onUpdate(item.id, item.quantity - 1)">−</button>
                                         <span t-esc="item.quantity"/>
-                                        <button t-on-click="() => props.onUpdate(item.id, item.quantity + 1)">+</button>
+                                        <button t-att-disabled="item.qty_available &gt; 0 and item.quantity &gt;= item.qty_available"
+                                                t-on-click="() => props.onUpdate(item.id, item.quantity + 1)">+</button>
                                     </div>
                                 </div>
                                 <div class="ss-cart-item__right">

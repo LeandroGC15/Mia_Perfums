@@ -16,13 +16,18 @@
                          t-att-alt="props.product.name"
                          loading="lazy"/>
 
-                    <!-- Badge de Descuento (-17%) estilo tienda de lujo -->
-                    <span t-if="props.product.discount_percentage &gt; 0" class="ss-card__discount-badge">
+                    <!-- Badge de Descuento (-17%) solo si hay stock -->
+                    <span t-if="props.product.discount_percentage &gt; 0 and !isOutOfStock" class="ss-card__discount-badge">
                         -<t t-esc="props.product.discount_percentage"/>%
                     </span>
 
-                    <!-- Badge destacado (si no tiene descuento) -->
-                    <span t-if="props.product.featured and (!props.product.discount_percentage || props.product.discount_percentage &lt;= 0)" class="ss-card__badge">⭐ Destacado</span>
+                    <!-- Tab de Pocas Unidades / Poco Stock (entre 1 y 5 unidades) -->
+                    <span t-if="isLowStock" class="ss-card__low-stock-badge">
+                        Pocas unidades
+                    </span>
+
+                    <!-- Badge destacado (si no tiene descuento y hay stock) -->
+                    <span t-if="props.product.featured and (!props.product.discount_percentage || props.product.discount_percentage &lt;= 0) and !isOutOfStock" class="ss-card__badge">⭐ Destacado</span>
 
                     <!-- Badge de familia -->
                     <span t-if="props.product.family_name and !props.listMode"
@@ -55,42 +60,55 @@
                             <t t-esc="props.product.description"/>
                         </p>
 
+                        <!-- En modo lista -->
                         <div t-if="props.listMode" class="ss-card__price-box">
-                            <span t-if="props.product.compare_at_price &gt; 0" class="ss-card__old-price">
-                                $<t t-esc="fmt(props.product.compare_at_price)"/>
-                            </span>
-                            <span class="ss-card__price" t-att-class="{ 'ss-card__price--sale': props.product.compare_at_price &gt; 0 }">
-                                $<t t-esc="fmt(props.product.price)"/>
-                            </span>
+                            <t t-if="isOutOfStock">
+                                <span class="ss-card__not-available">No disponible</span>
+                            </t>
+                            <t t-else="">
+                                <span t-if="props.product.compare_at_price &gt; 0" class="ss-card__old-price">
+                                    $<t t-esc="fmt(props.product.compare_at_price)"/>
+                                </span>
+                                <span class="ss-card__price" t-att-class="{ 'ss-card__price--sale': props.product.compare_at_price &gt; 0 }">
+                                    $<t t-esc="fmt(props.product.price)"/>
+                                </span>
+                            </t>
                         </div>
                     </div>
 
-                    <div t-if="!props.listMode" class="ss-card__footer">
-                        <div class="ss-card__price-box">
-                            <span t-if="props.product.compare_at_price &gt; 0" class="ss-card__old-price">
-                                $<t t-esc="fmt(props.product.compare_at_price)"/>
-                            </span>
-                            <span class="ss-card__price" t-att-class="{ 'ss-card__price--sale': props.product.compare_at_price &gt; 0 }">
-                                $<t t-esc="fmt(props.product.price)"/>
-                            </span>
-                        </div>
-                        <div t-if="cartQty &gt; 0" class="ss-card__qty-control" t-on-click.stop="">
-                            <button class="ss-qty-btn" t-on-click.stop="decreaseQty">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <!-- En modo normal (grilla / carrusel) -->
+                    <div t-if="!props.listMode" class="ss-card__footer" t-att-class="{ 'ss-card__footer--out-of-stock': isOutOfStock }">
+                        <t t-if="isOutOfStock">
+                            <span class="ss-card__not-available">No disponible</span>
+                        </t>
+                        <t t-else="">
+                            <div class="ss-card__price-box">
+                                <span t-if="props.product.compare_at_price &gt; 0" class="ss-card__old-price">
+                                    $<t t-esc="fmt(props.product.compare_at_price)"/>
+                                </span>
+                                <span class="ss-card__price" t-att-class="{ 'ss-card__price--sale': props.product.compare_at_price &gt; 0 }">
+                                    $<t t-esc="fmt(props.product.price)"/>
+                                </span>
+                            </div>
+                            <div t-if="cartQty &gt; 0" class="ss-card__qty-control" t-on-click.stop="">
+                                <button class="ss-qty-btn" t-on-click.stop="decreaseQty">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                </button>
+                                <span class="ss-qty-val" t-esc="cartQty"/>
+                                <button class="ss-qty-btn" t-on-click.stop="increaseQty">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                </button>
+                            </div>
+                            <button t-else="" class="ss-btn ss-btn--icon-cart"
+                                    t-on-click.stop="increaseQty"
+                                    title="Agregar al carrito">
+                                <span class="ss-btn__plus-icon">+</span>
                             </button>
-                            <span class="ss-qty-val" t-esc="cartQty"/>
-                            <button class="ss-qty-btn" t-on-click.stop="increaseQty">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            </button>
-                        </div>
-                        <button t-else="" class="ss-btn ss-btn--icon-cart"
-                                t-on-click.stop="increaseQty"
-                                title="Agregar al carrito">
-                            <span class="ss-btn__plus-icon">+</span>
-                        </button>
+                        </t>
                     </div>
 
-                    <t t-if="props.listMode">
+                    <!-- Botón en modo lista (solo si hay stock) -->
+                    <t t-if="props.listMode and !isOutOfStock">
                         <div t-if="cartQty &gt; 0" class="ss-card__qty-control ss-card__qty-control--list" t-on-click.stop="">
                             <button class="ss-qty-btn" t-on-click.stop="decreaseQty">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -113,10 +131,22 @@
             this.state = useState({ added: false });
         }
 
+        get isOutOfStock() {
+            const qty = this.props.product.qty_available;
+            return qty === undefined || qty === null || qty <= 0;
+        }
+
+        get isLowStock() {
+            const qty = this.props.product.qty_available;
+            return qty !== undefined && qty !== null && qty > 0 && qty <= 5;
+        }
+
         get cardClass() {
-            if (this.props.listMode) return 'ss-card ss-card--list';
-            if (this.props.focusMode) return 'ss-card ss-card--focus';
-            return 'ss-card';
+            let cls = 'ss-card';
+            if (this.props.listMode) cls += ' ss-card--list';
+            if (this.props.focusMode) cls += ' ss-card--focus';
+            if (this.isOutOfStock) cls += ' ss-card--out-of-stock';
+            return cls;
         }
 
         fmt(p) { return fmt(p); }
@@ -128,6 +158,11 @@
         }
 
         async increaseQty() {
+            if (this.isOutOfStock) return;
+            const max = this.props.product.qty_available;
+            if (max !== undefined && max !== null && max > 0 && this.cartQty >= max) {
+                return;
+            }
             if (this.props.onSetQuantity) {
                 await this.props.onSetQuantity(this.props.product.id, this.cartQty + 1);
             } else {
@@ -152,6 +187,7 @@
         }
 
         async addToCart() {
+            if (this.isOutOfStock) return;
             await this.props.onAddToCart(this.props.product.id, 1);
             this.state.added = true;
             setTimeout(() => { this.state.added = false; }, 1500);

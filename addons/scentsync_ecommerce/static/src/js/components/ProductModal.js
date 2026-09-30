@@ -27,8 +27,11 @@
 
                         <!-- Columna izquierda: imagen -->
                         <div class="ss-modal__gallery">
-                            <span t-if="props.product.discount_percentage &gt; 0" class="ss-card__discount-badge">
+                            <span t-if="props.product.discount_percentage &gt; 0 and !isOutOfStock" class="ss-card__discount-badge">
                                 -<t t-esc="props.product.discount_percentage"/>%
+                            </span>
+                            <span t-if="isLowStock" class="ss-card__low-stock-badge">
+                                Pocas unidades
                             </span>
                             <img class="ss-modal__img"
                                  t-att-src="props.product.image_url"
@@ -60,12 +63,22 @@
                                 </span>
                             </div>
 
-                            <!-- Precio -->
+                            <!-- Precio o No disponible -->
                             <div class="ss-modal__price-row">
-                                <span t-if="props.product.compare_at_price &gt; 0" class="ss-modal__old-price">
-                                    $<t t-esc="fmt(props.product.compare_at_price)"/>
-                                </span>
-                                <span class="ss-modal__price">$<t t-esc="fmt(props.product.price)"/></span>
+                                <t t-if="isOutOfStock">
+                                    <span class="ss-card__not-available" style="font-size: 22px; text-align: left;">No disponible</span>
+                                </t>
+                                <t t-else="">
+                                    <span t-if="props.product.compare_at_price &gt; 0" class="ss-modal__old-price">
+                                        $<t t-esc="fmt(props.product.compare_at_price)"/>
+                                    </span>
+                                    <span class="ss-modal__price">$<t t-esc="fmt(props.product.price)"/></span>
+                                </t>
+                            </div>
+
+                            <!-- Alerta de pocas unidades si aplica -->
+                            <div t-if="isLowStock" class="ss-modal__low-stock-alert">
+                                ⚠️ ¡Pocas unidades disponibles! (Solo quedan <t t-esc="props.product.qty_available"/>)
                             </div>
 
                             <!-- Descripción corta -->
@@ -89,24 +102,31 @@
 
                             <!-- Acciones: cantidad + botón agregar -->
                             <div class="ss-modal__actions">
-                                <div class="ss-modal__add-row">
-                                    <div class="ss-card__qty-control">
-                                        <button class="ss-qty-btn" t-on-click="dec">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                        </button>
-                                        <span class="ss-qty-val" t-esc="state.qty"/>
-                                        <button class="ss-qty-btn" t-on-click="inc">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <t t-if="isOutOfStock">
+                                    <button class="ss-btn ss-modal__not-available-btn" disabled="disabled">
+                                        No disponible
+                                    </button>
+                                </t>
+                                <t t-else="">
+                                    <div class="ss-modal__add-row">
+                                        <div class="ss-card__qty-control">
+                                            <button class="ss-qty-btn" t-on-click="dec">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            </button>
+                                            <span class="ss-qty-val" t-esc="state.qty"/>
+                                            <button class="ss-qty-btn" t-on-click="inc">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            </button>
+                                        </div>
+                                        <button class="ss-btn ss-modal__btn-cart"
+                                                t-att-class="{ 'ss-btn--added': state.added }"
+                                                t-att-disabled="state.adding"
+                                                t-on-click="addToCart">
+                                            <t t-if="state.added">✓ ¡Agregado!</t>
+                                            <t t-else="">Agregar al carrito</t>
                                         </button>
                                     </div>
-                                    <button class="ss-btn ss-modal__btn-cart"
-                                            t-att-class="{ 'ss-btn--added': state.added }"
-                                            t-att-disabled="state.adding"
-                                            t-on-click="addToCart">
-                                        <t t-if="state.added">✓ ¡Agregado!</t>
-                                        <t t-else="">Agregar al carrito</t>
-                                    </button>
-                                </div>
+                                </t>
                             </div>
 
                         </div><!-- /ss-modal__info -->
@@ -118,8 +138,22 @@
             this.state = useState({ qty: 1, added: false, adding: false });
         }
 
+        get isOutOfStock() {
+            const qty = this.props.product.qty_available;
+            return qty === undefined || qty === null || qty <= 0;
+        }
+
+        get isLowStock() {
+            const qty = this.props.product.qty_available;
+            return qty !== undefined && qty !== null && qty > 0 && qty <= 5;
+        }
+
         fmt(p) { return fmt(p); }
-        inc() { this.state.qty++; }
+        inc() {
+            const max = this.props.product.qty_available;
+            if (max && this.state.qty >= max) return;
+            this.state.qty++;
+        }
         dec() { if (this.state.qty > 1) this.state.qty--; }
 
         /** Convierte el campo de notas (texto separado por comas) en pills con colores */
@@ -137,6 +171,7 @@
          * El CartSidebar se abre automáticamente desde ShopApp.addToCart().
          */
         async addToCart() {
+            if (this.isOutOfStock) return;
             if (this.state.adding) return;
             this.state.adding = true;
 

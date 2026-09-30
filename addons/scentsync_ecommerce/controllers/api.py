@@ -78,6 +78,7 @@ class ScentSyncAPI(http.Controller):
                 'notes': p.scentsync_description_notes or '',
                 'compare_at_price': p.scentsync_compare_at_price or 0.0,
                 'discount_percentage': int(p.scentsync_discount_percentage or 0),
+                'qty_available': p.qty_available or 0.0,
             })
         return request.make_response(
             json.dumps(result),
@@ -111,6 +112,7 @@ class ScentSyncAPI(http.Controller):
             'notes': p.scentsync_description_notes or '',
             'compare_at_price': p.scentsync_compare_at_price or 0.0,
             'discount_percentage': int(p.scentsync_discount_percentage or 0),
+            'qty_available': p.qty_available or 0.0,
         }
         return request.make_response(
             json.dumps(data),
@@ -139,6 +141,7 @@ class ScentSyncAPI(http.Controller):
                 'quantity': item.quantity,
                 'price_unit': item.price_unit,
                 'subtotal': item.quantity * item.price_unit,
+                'qty_available': item.product_id.qty_available or 0.0,
             })
         return result
 
@@ -159,18 +162,30 @@ class ScentSyncAPI(http.Controller):
         if not product:
             return {'error': 'Producto no encontrado'}
 
+        if (product.qty_available or 0.0) <= 0:
+            return {'error': 'Producto no disponible'}
+
         existing = request.env['scentsync.cart'].sudo().search([
             ('session_id', '=', session_id),
             ('product_id', '=', product.id),
         ], limit=1)
 
+        req_qty = int(quantity)
+        if req_qty < 1:
+            req_qty = 1
+
         if existing:
-            existing.write({'quantity': existing.quantity + int(quantity)})
+            new_qty = existing.quantity + req_qty
+            if product.qty_available > 0 and new_qty > int(product.qty_available):
+                new_qty = int(product.qty_available)
+            existing.write({'quantity': new_qty})
         else:
+            if product.qty_available > 0 and req_qty > int(product.qty_available):
+                req_qty = int(product.qty_available)
             request.env['scentsync.cart'].sudo().create({
                 'session_id': session_id,
                 'product_id': product.id,
-                'quantity': int(quantity),
+                'quantity': req_qty,
                 'price_unit': product.lst_price,
             })
 
@@ -188,7 +203,10 @@ class ScentSyncAPI(http.Controller):
         if int(quantity) <= 0:
             item.unlink()
         else:
-            item.write({'quantity': int(quantity)})
+            final_qty = int(quantity)
+            if item.product_id.qty_available > 0 and final_qty > int(item.product_id.qty_available):
+                final_qty = int(item.product_id.qty_available)
+            item.write({'quantity': final_qty})
 
         items = request.env['scentsync.cart'].sudo().search([('session_id', '=', session_id)])
         total = sum(i.quantity * i.price_unit for i in items)

@@ -87,14 +87,20 @@
                                 <p class="ss-featured-section__desc"
                                    t-esc="featuredProduct.description || 'Una fragancia única que define el lujo moderno.'"/>
                                 <div class="ss-featured-section__price">
-                                    $<t t-esc="fmt(featuredProduct.price)"/>
+                                    <t t-if="featuredProduct.qty_available &gt; 0">
+                                        $<t t-esc="fmt(featuredProduct.price)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="color:#8da2b5;font-size:22px;font-weight:700;">No disponible</span>
+                                    </t>
                                 </div>
                                 <div class="ss-featured-section__actions">
                                     <button class="ss-featured-section__btn ss-featured-section__btn--gold"
                                             t-on-click="() => openModal(featuredProduct)">
                                         Ver detalles
                                     </button>
-                                    <button class="ss-featured-section__btn ss-featured-section__btn--outline"
+                                    <button t-if="featuredProduct.qty_available &gt; 0"
+                                            class="ss-featured-section__btn ss-featured-section__btn--outline"
                                             t-on-click="() => addToCart(featuredProduct.id, 1)">
                                         🛒 Agregar al carrito
                                     </button>
@@ -289,14 +295,25 @@
         openModal(product) { this.state.modalProduct = product; }
 
         async addToCart(productId, qty, openCart = true) {
+            const product = this.state.products.find(p => p.id === productId);
+            if (product && (product.qty_available === undefined || product.qty_available === null || product.qty_available <= 0)) {
+                return;
+            }
             const res = await rpc('/scentsync/api/cart/add', { product_id: productId, quantity: qty });
-            if (res) { 
+            if (res && res.items) { 
                 this.state.cart = res.items || []; 
                 if (openCart) this.state.cartOpen = true; 
             }
         }
 
         async setProductQuantity(productId, newQty) {
+            const product = this.state.products.find(p => p.id === productId);
+            if (product && (product.qty_available === undefined || product.qty_available === null || product.qty_available <= 0)) {
+                return;
+            }
+            if (product && product.qty_available > 0 && newQty > product.qty_available) {
+                newQty = product.qty_available;
+            }
             const item = this.state.cart.find(i => i.product_id === productId);
             if (newQty <= 0) {
                 if (item) await this.removeFromCart(item.id);

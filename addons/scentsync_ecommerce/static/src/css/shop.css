@@ -979,6 +979,22 @@ body {
     z-index: 5;
     box-shadow: 0 2px 8px rgba(189, 8, 28, 0.35);
 }
+.ss-card__low-stock-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #e27d14;
+    color: #ffffff;
+    font-family: var(--ss-font-body);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(226, 125, 20, 0.4);
+}
 .ss-card__badge {
     position: absolute; top: 10px; left: 10px;
     background: var(--ss-accent-red); color: #ffffff;
@@ -1019,6 +1035,49 @@ body {
 .ss-card__footer {
     display: flex; align-items: center; justify-content: space-between;
     margin-top: auto; padding-top: 12px; border-top: 1px solid var(--ss-light-gray);
+}
+.ss-card__footer--out-of-stock {
+    justify-content: center !important;
+    border-top: none !important;
+    padding-top: 10px !important;
+    min-height: 42px;
+}
+.ss-card__not-available {
+    font-family: var(--ss-font-body);
+    font-size: 18px;
+    font-weight: 700;
+    color: #7b8e9f;
+    text-align: center;
+    letter-spacing: -0.01em;
+    display: inline-block;
+    width: 100%;
+}
+.ss-card--list .ss-card__not-available {
+    font-size: 16px;
+    text-align: left;
+}
+.ss-modal__not-available-btn {
+    background: #f1f5f9 !important;
+    color: #7b8e9f !important;
+    cursor: not-allowed !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    padding: 12px !important;
+}
+.ss-modal__low-stock-alert {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 .ss-card__price-box {
     display: flex;
